@@ -38,7 +38,7 @@ public class BoardManager : MonoBehaviour {
 		gridPostions.Clear ();
 		for (int x = 1; x < columns -1; x ++) {
 
-			for (int y = 1; x < rows -1; y ++) {
+			for (int y = 1; y < rows -1; y ++) {
 				gridPostions.Add(new Vector3(x,y,0.0f));
 			}
 		}
@@ -49,7 +49,7 @@ public class BoardManager : MonoBehaviour {
 		boardHolder = new GameObject ("Board").transform;
 
 		for (int x = -1; x < columns +1; x ++) {
-			for (int y = -1; x < rows +1; y ++) {
+			for (int y = -1; y < rows +1; y ++) {
 				GameObject toInstantiate = floorTiles[Random.Range(0,floorTiles.Length)];
 			
 				if (x == -1 || x == columns || y == -1 || y == rows) {
@@ -83,6 +83,17 @@ public class BoardManager : MonoBehaviour {
 
 	}
 
-	public void setupScene(int level){
+	public void setupScene(int level)
+	{
+		BoardSetup ();
+
+		InitializeList ();
+		LayoutObjectAtRandomPosition (wallTiles, wallCount.maximun, wallCount.minimun);
+		LayoutObjectAtRandomPosition (foodTiles, foodCount.maximun, foodCount.minimun);
+
+		int enemyCount = (int)Mathf.Log (level, 2f);
+		LayoutObjectAtRandomPosition (enemyTiles, enemyCount, enemyCount);
+		Instantiate (exit, new Vector3 (columns - 1, rows - 1, 0), Quaternion.identity);
+
 	}
 }
