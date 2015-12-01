@@ -20,8 +20,12 @@ public class Player : MovingObject {
 
 	protected override void AttemptMove<T> (int xDir, int yDir)
 	{
-
+		Debug.Log ("AttemptMove xDir " + xDir);
+		Debug.Log ("AttemptMove yDir " + yDir);
 		food--;
+
+		//Debug.Break ();
+
 		base.AttemptMove <T> (xDir, yDir);
 
 		RaycastHit2D hit;
@@ -81,9 +85,9 @@ public class Player : MovingObject {
 
 	// Update is called once per frame
 	void Update () {
-	
+
 		if (!GameManager.instance.playersTurn) {
-			
+			//Debug.Log ("Attempt to move");
 			return;
 		}
 
@@ -94,10 +98,12 @@ public class Player : MovingObject {
 		vertical = (int) Input.GetAxisRaw ("Vertical");
 
 		if (horizontal != 0) {
+			//Debug.Log ("Attempt to move horizontal");
 			vertical = 0;
 		}
 
 		if (horizontal != 0 || vertical != 0) {
+			//Debug.Log ("Player Attempt to move vertical");
 			AttemptMove<Wall>(horizontal,vertical);
 		}
 

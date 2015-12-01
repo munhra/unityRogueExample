@@ -28,9 +28,10 @@ public abstract class MovingObject : MonoBehaviour {
 			Vector3 newPosition = Vector3.MoveTowards(rb2D.position, end, inverseMoveTime * Time.deltaTime);
 			rb2D.MovePosition(newPosition);
 			sqrRemainingDistance = (transform.position - end).sqrMagnitude;
+			yield return null;
 		}
 
-		yield return null;
+
 	
 	}
 
@@ -54,8 +55,12 @@ public abstract class MovingObject : MonoBehaviour {
 	protected virtual void AttemptMove <T> (int xDir, int yDir)
 		where T : Component
 	{
+		//Debug.Log ("AttemptMove Moving Object");
+
+		Debug.Log ("AttemptMove Moving Object");
 		RaycastHit2D hit;
 		bool canMove = Move (xDir, yDir, out hit);
+	
 		if (hit.transform == null) {
 			return;
 		}

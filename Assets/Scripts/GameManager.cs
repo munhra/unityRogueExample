@@ -45,6 +45,8 @@ public class GameManager : MonoBehaviour {
 
 	IEnumerator MoveEnemies() {
 
+		Debug.Log ("IEnumerator MoveEnemies()");
+
 		enemiesMoving = true;
 		yield return new WaitForSeconds(turnDelay);
 
