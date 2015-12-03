@@ -13,6 +13,16 @@ public class Player : MovingObject {
 	private Animator animator;
 	private int food;
 
+	public AudioClip moveSound1;
+	public AudioClip moveSound2;
+	public AudioClip eatSound1;
+	public AudioClip eatSound2;
+	public AudioClip drinkSound1;
+	public AudioClip drinkSound2;
+	public AudioClip gameOverSound;
+
+	private Vector2 touchOrigin = -Vector2.one;
+
 	// Use this for initialization
 	protected override void Start () {
 		animator = GetComponent<Animator> ();
@@ -33,6 +43,11 @@ public class Player : MovingObject {
 
 		RaycastHit2D hit;
 
+
+		if (Move (xDir,yDir, out hit)) {
+			SoundManager.instance.RandomizeSfx(moveSound1,moveSound2);
+		}
+
 		CheckIfGameOver ();
 
 		GameManager.instance.playersTurn = false;
@@ -47,10 +62,12 @@ public class Player : MovingObject {
 			enabled = false;
 		} else if (other.tag == "Food") {
 			food += pointsPerFood;
+			SoundManager.instance.RandomizeSfx(eatSound1,eatSound1);
 			foodText.text = "+" + pointsPerFood + " Food: " + food;
 			other.gameObject.SetActive (false);
 		} else if (other.tag == "Soda") {
 			food += pointsPerSoda;
+			SoundManager.instance.RandomizeSfx(drinkSound1,drinkSound2);
 			foodText.text = "+" + pointsPerFood + " Food: " + food;
 			other.gameObject.SetActive (false);
 		}
@@ -84,6 +101,8 @@ public class Player : MovingObject {
 	private void CheckIfGameOver()
 	{
 		if (food <= 0) {
+			SoundManager.instance.PlaySingle(gameOverSound);
+			SoundManager.instance.musicSource.Stop();
 			GameManager.instance.GameOver();
 		}
 
@@ -99,15 +118,39 @@ public class Player : MovingObject {
 
 		int horizontal = 0;
 		int vertical = 0;
-
+#if UNITY_STANDALONE || UNITY_WEBPLAYER
 		horizontal = (int) Input.GetAxisRaw ("Horizontal");
 		vertical = (int) Input.GetAxisRaw ("Vertical");
-
 		if (horizontal != 0) {
 			//Debug.Log ("Attempt to move horizontal");
 			vertical = 0;
 		}
+#else
 
+		if (Input.touchCount > 0) {
+
+			Touch mytouch = Input.touches[0];
+
+			if (mytouch.phase == TouchPhase.Began) {
+				touchOrigin = mytouch.position;
+			} else if (mytouch.phase == TouchPhase.Ended && touchOrigin.x >= 0) {
+			
+				Vector2 touchEnded = mytouch.position;
+				float x = touchEnded.x - touchOrigin.x;
+				float y = touchEnded.y - touchOrigin.y;
+
+				touchOrigin.x = -1;
+
+				if (Mathf.Abs(x) > Mathf.Abs(y)) {
+					horizontal = x > 0 ? 1 : -1;
+				}else{
+
+					vertical = y > 0 ? 1 : -1;
+				}
+			}
+
+		}
+#endif
 		if (horizontal != 0 || vertical != 0) {
 			//Debug.Log ("Player Attempt to move vertical");
 			AttemptMove<Wall>(horizontal,vertical);
