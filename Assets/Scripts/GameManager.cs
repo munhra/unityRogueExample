@@ -19,6 +19,7 @@ public class GameManager : MonoBehaviour {
 	private List<Enemy> enemies;
 	private bool enemiesMoving;
 	private bool doingSetup;
+	public bool loadedFromMenu = true;
 
 	void Awake()
 	{
@@ -40,11 +41,19 @@ public class GameManager : MonoBehaviour {
 		levelText.text = "After " + level +" days, you starved. ";
 		levelImage.SetActive (true);
 		enabled = false;
+		Invoke ("LoadMenuScene", levelStartDelay);
+		loadedFromMenu = false;
 
+	}
+
+	private void LoadMenuScene(){
+		Destroy(gameObject);
+		Application.LoadLevel ("MenuScene");
 	}
 
 	void InitGame()
 	{
+		Debug.Log ("InitGame");
 		doingSetup = true;
 		levelImage = GameObject.Find("LevelImage");
 		levelText =  GameObject.Find("LevelText").GetComponent<Text>();
@@ -60,18 +69,16 @@ public class GameManager : MonoBehaviour {
 		doingSetup = false;
 	}
 
-	private void OnLevelWasLoaded (int index) {
-	
-		level++;
-		InitGame();
 
+	private void OnLevelWasLoaded (int index) {
+		if (!loadedFromMenu) {
+			Debug.Log ("OnLevelWasLoaded " + index);
+			level++;
+			InitGame();
+		}
 	}
 
-
-
 	IEnumerator MoveEnemies() {
-
-		Debug.Log ("IEnumerator MoveEnemies()");
 
 		enemiesMoving = true;
 		yield return new WaitForSeconds(turnDelay);

@@ -33,11 +33,9 @@ public class Player : MovingObject {
 
 	protected override void AttemptMove<T> (int xDir, int yDir)
 	{
-		Debug.Log ("AttemptMove xDir " + xDir);
-		Debug.Log ("AttemptMove yDir " + yDir);
+
 		food--;
 		foodText.text = "Food: " + food;
-		//Debug.Break ();
 
 		base.AttemptMove <T> (xDir, yDir);
 
@@ -77,15 +75,16 @@ public class Player : MovingObject {
 	
 		Wall hitwall = component as Wall;
 		hitwall.DamageWall (wallDamange);
-		animator.SetTrigger ("PlayerChop");
+		animator.SetTrigger ("playerChop");
 	}
 
 	private void Restart() {
+		GameManager.instance.loadedFromMenu = false;
 		Application.LoadLevel (Application.loadedLevel);
 	}
 
 	public void LooseFood(int loss) {
-		animator.SetTrigger ("PlayerHit");
+		animator.SetTrigger ("playerHit");
 		food -= loss;
 		foodText.text = "-" + loss + " Food: " + food;
 		CheckIfGameOver ();
@@ -112,7 +111,6 @@ public class Player : MovingObject {
 	void Update () {
 
 		if (!GameManager.instance.playersTurn) {
-			//Debug.Log ("Attempt to move");
 			return;
 		}
 
@@ -122,7 +120,6 @@ public class Player : MovingObject {
 		horizontal = (int) Input.GetAxisRaw ("Horizontal");
 		vertical = (int) Input.GetAxisRaw ("Vertical");
 		if (horizontal != 0) {
-			//Debug.Log ("Attempt to move horizontal");
 			vertical = 0;
 		}
 #else
@@ -152,7 +149,6 @@ public class Player : MovingObject {
 		}
 #endif
 		if (horizontal != 0 || vertical != 0) {
-			//Debug.Log ("Player Attempt to move vertical");
 			AttemptMove<Wall>(horizontal,vertical);
 		}
 
