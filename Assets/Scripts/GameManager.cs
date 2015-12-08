@@ -71,6 +71,10 @@ public class GameManager : MonoBehaviour {
 
 
 	private void OnLevelWasLoaded (int index) {
+
+		//AdsManager adsmanager = new AdsManager ();
+		//adsmanager.ShowAd ();
+
 		if (!loadedFromMenu) {
 			Debug.Log ("OnLevelWasLoaded " + index);
 			level++;

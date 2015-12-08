@@ -18,6 +18,10 @@ public class MenuController : MonoBehaviour {
 
 	public void newGame() {
 		Debug.Log ("New Game");
+
+		//AdsManager adsmanager = new AdsManager ();
+		//adsmanager.ShowAd ();
+
 		Application.LoadLevel ("MainScence");
 	}
 
