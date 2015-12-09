@@ -8,11 +8,14 @@ public class Player : MovingObject {
 	public int pointsPerFood = 10;
 	public int pointsPerSoda = 20;
 	public float restartLevelDelay = 1f;
+
+	public float presentationDelay = 1.5f;
+
 	public Text foodText;
 
 	private Animator animator;
-	private int food;
-
+	public int food;
+	
 	public AudioClip moveSound1;
 	public AudioClip moveSound2;
 	public AudioClip eatSound1;
@@ -28,6 +31,11 @@ public class Player : MovingObject {
 		animator = GetComponent<Animator> ();
 		food = GameManager.instance.playerFoodPoints;
 		foodText.text = "Food: " + food;
+
+		if (GameManager.presentationMode) {
+			InvokeRepeating ("presentationMovement", presentationDelay, presentationDelay);
+		}
+
 		base.Start ();
 	}
 
@@ -56,8 +64,10 @@ public class Player : MovingObject {
 	private void OnTriggerEnter2D (Collider2D other) {
 
 		if (other.tag == "Exit") {
-			Invoke ("Restart", restartLevelDelay);
-			enabled = false;
+			if (!GameManager.presentationMode) {
+				Invoke ("Restart", restartLevelDelay);
+				enabled = false;
+			}
 		} else if (other.tag == "Food") {
 			food += pointsPerFood;
 			SoundManager.instance.RandomizeSfx(eatSound1,eatSound1);
@@ -89,9 +99,7 @@ public class Player : MovingObject {
 		foodText.text = "-" + loss + " Food: " + food;
 		CheckIfGameOver ();
 	}
-
-	//protected override void OnCantMove<T>
-
+	
 	private void OnDisable()
 	{
 		GameManager.instance.playerFoodPoints = food;
@@ -116,41 +124,77 @@ public class Player : MovingObject {
 
 		int horizontal = 0;
 		int vertical = 0;
-#if UNITY_STANDALONE || UNITY_WEBPLAYER
-		horizontal = (int) Input.GetAxisRaw ("Horizontal");
-		vertical = (int) Input.GetAxisRaw ("Vertical");
+
+		if (!GameManager.presentationMode) {
+
+
+			#if UNITY_STANDALONE || UNITY_WEBPLAYER
+			horizontal = (int)Input.GetAxisRaw ("Horizontal");
+			vertical = (int)Input.GetAxisRaw ("Vertical");
+			
+			if (horizontal != 0) {
+				vertical = 0;
+			}
+			#else
+			
+			if (Input.touchCount > 0) {
+				
+				Touch mytouch = Input.touches[0];
+				
+				if (mytouch.phase == TouchPhase.Began) {
+					touchOrigin = mytouch.position;
+				} else if (mytouch.phase == TouchPhase.Ended && touchOrigin.x >= 0) {
+					
+					Vector2 touchEnded = mytouch.position;
+					float x = touchEnded.x - touchOrigin.x;
+					float y = touchEnded.y - touchOrigin.y;
+					
+					touchOrigin.x = -1;
+					
+					if (Mathf.Abs(x) > Mathf.Abs(y)) {
+						horizontal = x > 0 ? 1 : -1;
+					}else{
+						
+						vertical = y > 0 ? 1 : -1;
+					}
+				}
+				
+			}
+			#endif
+
+			if (horizontal != 0 || vertical != 0) {
+				AttemptMove<Wall>(horizontal,vertical);
+			}
+		} 
+
+	}
+
+
+	private void presentationMovement() {
+	
+		int horizontal = presentationMovementX();
+		int vertical = presentationMovementY();
+		
+		Debug.Log ("Horizontal movement "+horizontal);
+		Debug.Log ("Vertical movement "+vertical);
+		
 		if (horizontal != 0) {
 			vertical = 0;
 		}
-#else
 
-		if (Input.touchCount > 0) {
-
-			Touch mytouch = Input.touches[0];
-
-			if (mytouch.phase == TouchPhase.Began) {
-				touchOrigin = mytouch.position;
-			} else if (mytouch.phase == TouchPhase.Ended && touchOrigin.x >= 0) {
-			
-				Vector2 touchEnded = mytouch.position;
-				float x = touchEnded.x - touchOrigin.x;
-				float y = touchEnded.y - touchOrigin.y;
-
-				touchOrigin.x = -1;
-
-				if (Mathf.Abs(x) > Mathf.Abs(y)) {
-					horizontal = x > 0 ? 1 : -1;
-				}else{
-
-					vertical = y > 0 ? 1 : -1;
-				}
-			}
-
-		}
-#endif
 		if (horizontal != 0 || vertical != 0) {
 			AttemptMove<Wall>(horizontal,vertical);
 		}
-
 	}
+
+	private int presentationMovementX() {
+		return Random.Range(-1,2);
+	}
+
+	private int presentationMovementY() {
+		return Random.Range(-1,2);
+	}
+
+
+
 }

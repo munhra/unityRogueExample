@@ -85,8 +85,8 @@ public class BoardManager : MonoBehaviour {
 
 	public void setupScene(int level)
 	{
+		Debug.Log ("setupScene");		
 		BoardSetup ();
-
 		InitializeList ();
 		LayoutObjectAtRandomPosition (wallTiles, wallCount.maximun, wallCount.minimun);
 		LayoutObjectAtRandomPosition (foodTiles, foodCount.maximun, foodCount.minimun);

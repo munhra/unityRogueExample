@@ -13,15 +13,12 @@ public class MenuController : MonoBehaviour {
 	private Transform boardHolder;
 
 	public void Awake(){
-		MenuSceneSetup ();
+		//MenuSceneSetup ();
 	}
 
 	public void newGame() {
 		Debug.Log ("New Game");
-
-		//AdsManager adsmanager = new AdsManager ();
-		//adsmanager.ShowAd ();
-
+		Destroy(GameManager.instance);
 		Application.LoadLevel ("MainScence");
 	}
 

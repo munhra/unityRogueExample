@@ -6,6 +6,8 @@ using UnityEngine.UI;
 public class GameManager : MonoBehaviour {
 
 	public static GameManager instance = null;
+	public static bool presentationMode = false;
+	
 	public float levelStartDelay = 2f;
 	public BoardManager boardScript;
 	public int playerFoodPoints = 100;
@@ -34,6 +36,8 @@ public class GameManager : MonoBehaviour {
 		enemies = new List<Enemy> ();
 		boardScript = GetComponent<BoardManager> ();
 		InitGame ();
+	
+		
 	}
 
 	public void GameOver() 
@@ -54,14 +58,22 @@ public class GameManager : MonoBehaviour {
 	void InitGame()
 	{
 		Debug.Log ("InitGame");
-		doingSetup = true;
-		levelImage = GameObject.Find("LevelImage");
-		levelText =  GameObject.Find("LevelText").GetComponent<Text>();
-		levelText.text = "Day " + level;
-		levelImage.SetActive (true);
-		Invoke ("HideLevelImage", levelStartDelay);
+		if (!presentationMode) {
+			doingSetup = true;
+			levelImage = GameObject.Find ("LevelImage");
+			levelText = GameObject.Find ("LevelText").GetComponent<Text> ();
+			levelText.text = "Day " + level;
+			levelImage.SetActive (true);
+			Invoke ("HideLevelImage", levelStartDelay);
+		} else {
+		
+			doingSetup = false;
+		}
+
+		Debug.Log ("before clear enemies");
 		enemies.Clear ();
 		boardScript.setupScene (level);
+		Debug.Log ("started setupScene");	
 	}
 
 	private void HideLevelImage() {
@@ -72,8 +84,8 @@ public class GameManager : MonoBehaviour {
 
 	private void OnLevelWasLoaded (int index) {
 
-		//AdsManager adsmanager = new AdsManager ();
-		//adsmanager.ShowAd ();
+		AdsManager adsmanager = new AdsManager ();
+		adsmanager.ShowRewardedAd ();
 
 		if (!loadedFromMenu) {
 			Debug.Log ("OnLevelWasLoaded " + index);
