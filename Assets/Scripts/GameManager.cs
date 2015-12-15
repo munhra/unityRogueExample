@@ -84,10 +84,17 @@ public class GameManager : MonoBehaviour {
 
 	private void OnLevelWasLoaded (int index) {
 
-		AdsManager adsmanager = new AdsManager ();
-		adsmanager.ShowRewardedAd ();
 
 		if (!loadedFromMenu) {
+
+			float randomValue = Random.value;
+			Debug.Log("Ads random value "+randomValue);
+
+			if (randomValue > 0.7) {
+				AdsManager adsmanager = new AdsManager ();
+				adsmanager.ShowRewardedAd ();
+			}
+
 			Debug.Log ("OnLevelWasLoaded " + index);
 			level++;
 			InitGame();
